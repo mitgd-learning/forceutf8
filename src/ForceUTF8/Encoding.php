@@ -1,32 +1,33 @@
 <?php
+
 /*
-Copyright (c) 2008 Sebastián Grignoli
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
-1. Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-3. Neither the name of copyright holders nor the names of its
-   contributors may be used to endorse or promote products derived
-   from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL COPYRIGHT HOLDERS OR CONTRIBUTORS
-BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-*/
+ * Copyright (c) 2008 Sebastián Grignoli
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of copyright holders nor the names of its
+ * contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL COPYRIGHT HOLDERS OR CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 
 /**
  * @author   "Sebastián Grignoli" <grignoli@gmail.com>
@@ -35,17 +36,18 @@ POSSIBILITY OF SUCH DAMAGE.
  * @link     https://github.com/neitanod/forceutf8
  * @example  https://github.com/neitanod/forceutf8
  * @license  Revised BSD
-  */
+ */
+declare(strict_type=1);
 
-namespace ForceUTF8;
+namespace Utf8;
 
-class Encoding {
+final class Encoding 
+{
+    const ICONV_TRANSLIT = 'TRANSLIT';
+    const ICONV_IGNORE = 'IGNORE';
+    const WITHOUT_ICONV = '';
 
-  const ICONV_TRANSLIT = "TRANSLIT";
-  const ICONV_IGNORE = "IGNORE";
-  const WITHOUT_ICONV = "";
-
-  protected static $win1252ToUtf8 = array(
+    private static $win1252ToUtf8 = [
         128 => "\xe2\x82\xac",
 
         130 => "\xe2\x80\x9a",
@@ -78,9 +80,9 @@ class Encoding {
 
         158 => "\xc5\xbe",
         159 => "\xc5\xb8"
-  );
+    ];
 
-    protected static $brokenUtf8ToUtf8 = array(
+    private static $brokenUtf8ToUtf8 = [
         "\xc2\x80" => "\xe2\x82\xac",
 
         "\xc2\x82" => "\xe2\x80\x9a",
@@ -113,82 +115,75 @@ class Encoding {
 
         "\xc2\x9e" => "\xc5\xbe",
         "\xc2\x9f" => "\xc5\xb8"
-  );
+    ];
 
-  protected static $utf8ToWin1252 = array(
-       "\xe2\x82\xac" => "\x80",
+    private static $utf8ToWin1252 = [
+        "\xe2\x82\xac" => "\x80",
 
-       "\xe2\x80\x9a" => "\x82",
-       "\xc6\x92"     => "\x83",
-       "\xe2\x80\x9e" => "\x84",
-       "\xe2\x80\xa6" => "\x85",
-       "\xe2\x80\xa0" => "\x86",
-       "\xe2\x80\xa1" => "\x87",
-       "\xcb\x86"     => "\x88",
-       "\xe2\x80\xb0" => "\x89",
-       "\xc5\xa0"     => "\x8a",
-       "\xe2\x80\xb9" => "\x8b",
-       "\xc5\x92"     => "\x8c",
+        "\xe2\x80\x9a" => "\x82",
+        "\xc6\x92"     => "\x83",
+        "\xe2\x80\x9e" => "\x84",
+        "\xe2\x80\xa6" => "\x85",
+        "\xe2\x80\xa0" => "\x86",
+        "\xe2\x80\xa1" => "\x87",
+        "\xcb\x86"     => "\x88",
+        "\xe2\x80\xb0" => "\x89",
+        "\xc5\xa0"     => "\x8a",
+        "\xe2\x80\xb9" => "\x8b",
+        "\xc5\x92"     => "\x8c",
 
-       "\xc5\xbd"     => "\x8e",
+        "\xc5\xbd"     => "\x8e",
 
 
-       "\xe2\x80\x98" => "\x91",
-       "\xe2\x80\x99" => "\x92",
-       "\xe2\x80\x9c" => "\x93",
-       "\xe2\x80\x9d" => "\x94",
-       "\xe2\x80\xa2" => "\x95",
-       "\xe2\x80\x93" => "\x96",
-       "\xe2\x80\x94" => "\x97",
-       "\xcb\x9c"     => "\x98",
-       "\xe2\x84\xa2" => "\x99",
-       "\xc5\xa1"     => "\x9a",
-       "\xe2\x80\xba" => "\x9b",
-       "\xc5\x93"     => "\x9c",
+        "\xe2\x80\x98" => "\x91",
+        "\xe2\x80\x99" => "\x92",
+        "\xe2\x80\x9c" => "\x93",
+        "\xe2\x80\x9d" => "\x94",
+        "\xe2\x80\xa2" => "\x95",
+        "\xe2\x80\x93" => "\x96",
+        "\xe2\x80\x94" => "\x97",
+        "\xcb\x9c"     => "\x98",
+        "\xe2\x84\xa2" => "\x99",
+        "\xc5\xa1"     => "\x9a",
+        "\xe2\x80\xba" => "\x9b",
+        "\xc5\x93"     => "\x9c",
 
-       "\xc5\xbe"     => "\x9e",
-       "\xc5\xb8"     => "\x9f"
-    );
+        "\xc5\xbe"     => "\x9e",
+        "\xc5\xb8"     => "\x9f"
+    ];
 
-  static function toUTF8($text){
-  /**
-   * Function \ForceUTF8\Encoding::toUTF8
-   *
-   * This function leaves UTF8 characters alone, while converting almost all non-UTF8 to UTF8.
-   *
-   * It assumes that the encoding of the original string is either Windows-1252 or ISO 8859-1.
-   *
-   * It may fail to convert characters to UTF-8 if they fall into one of these scenarios:
-   *
-   * 1) when any of these characters:   ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞß
-   *    are followed by any of these:  ("group B")
-   *                                    ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶•¸¹º»¼½¾¿
-   * For example:   %ABREPRESENT%C9%BB. «REPRESENTÉ»
-   * The "«" (%AB) character will be converted, but the "É" followed by "»" (%C9%BB)
-   * is also a valid unicode character, and will be left unchanged.
-   *
-   * 2) when any of these: àáâãäåæçèéêëìíîï  are followed by TWO chars from group B,
-   * 3) when any of these: ðñòó  are followed by THREE chars from group B.
-   *
-   * @name toUTF8
-   * @param string $text  Any string.
-   * @return string  The same string, UTF8 encoded
-   *
-   */
-
-    if(is_array($text))
+    /**
+     * Function \ForceUtf8\Encoding::toUTF8
+     *
+     * This function leaves UTF8 characters alone, while converting almost all non-UTF8 to UTF8.
+     *
+     * It assumes that the encoding of the original string is either Windows-1252 or ISO 8859-1.
+     *
+     * It may fail to convert characters to UTF-8 if they fall into one of these scenarios:
+     *
+     * 1) when any of these characters:   ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞß
+     *    are followed by any of these:  ("group B")
+     *                                    ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶•¸¹º»¼½¾¿
+     * For example:   %ABREPRESENT%C9%BB. «REPRESENTÉ»
+     * The "«" (%AB) character will be converted, but the "É" followed by "»" (%C9%BB)
+     * is also a valid unicode character, and will be left unchanged.
+     *
+     * 2) when any of these: àáâãäåæçèéêëìíîï  are followed by TWO chars from group B,
+     * 3) when any of these: ðñòó  are followed by THREE chars from group B.
+     *
+     * @param string $text   Any string.
+     * @return string        The same string, UTF8 encoded
+     *
+     */
+    public static function toUtf8(string $text): string
     {
-      foreach($text as $k => $v)
-      {
-        $text[$k] = self::toUTF8($v);
-      }
-      return $text;
-    }
-
-    if(!is_string($text)) {
-      return $text;
-    }
-
+        // todo write a fromArray function?
+        /*if(\is_array($text)) {
+            foreach($text as $k => $v) {
+                $text[$k] = self::toUTF8($v);
+            }
+        }*/
+    
     $max = self::strlen($text);
 
     $buf = "";
